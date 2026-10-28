@@ -1,0 +1,801 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Electric Vehicle Market Performance & Insights - College Project Analytics Dashboard & Story using Python Flask and Tableau Public.">
+  <title>{{ config.project_title }} | EV Market Analytics</title>
+
+  <!-- Main Stylesheet -->
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+
+  <!-- ========================================================================
+       Navigation Bar
+       ======================================================================== -->
+  <header class="navbar" id="navbar">
+    <div class="container navbar-inner">
+      <a href="#overview" class="brand-logo" aria-label="Home">
+        <div class="brand-icon-box">
+          <!-- EV / Lightning Bolt SVG Icon -->
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
+          </svg>
+        </div>
+        <span>EV <span class="brand-text-accent">Insights</span></span>
+      </a>
+
+      <!-- Desktop & Mobile Menu -->
+      <nav>
+        <ul class="nav-menu" id="navMenu">
+          <li><a href="#overview" class="nav-link active">Overview</a></li>
+          <li><a href="#dashboard" class="nav-link">Dashboard</a></li>
+          <li><a href="#story" class="nav-link">Story</a></li>
+          <li><a href="#about" class="nav-link">About & Dataset</a></li>
+        </ul>
+      </nav>
+
+      <div class="nav-actions">
+        <!-- Direct Tableau Link (using specified project link) -->
+        <a href="{{ dashboard_url }}" target="_blank" rel="noopener noreferrer" class="btn-nav-tableau" title="Open Dashboard directly on Tableau Public">
+          <span>Tableau Public</span>
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
+            <polyline points="15 3 21 3 21 9"></polyline>
+            <line x1="10" y1="14" x2="21" y2="3"></line>
+          </svg>
+        </a>
+
+        <!-- Mobile Hamburger Button -->
+        <button class="hamburger-btn" id="hamburgerBtn" aria-label="Toggle navigation menu">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="3" y1="12" x2="21" y2="12"></line>
+            <line x1="3" y1="6" x2="21" y2="6"></line>
+            <line x1="3" y1="18" x2="21" y2="18"></line>
+          </svg>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <!-- ======================================================================
+         Section 1: Overview & Hero
+         ====================================================================== -->
+    <section id="overview" class="hero-section">
+      <div class="container">
+        <div class="hero-content">
+          <div class="hero-badge">
+            <span class="hero-badge-dot"></span>
+            <span>College Capstone Project &bull; {{ config.academic_year }}</span>
+          </div>
+
+          <h1 class="hero-title">
+            Electric Vehicle Market <br>
+            <span class="hero-title-gradient">Performance & Insights</span>
+          </h1>
+
+          <p class="hero-subtitle">
+            An empirical data analytics portal evaluating electric vehicle market penetration,
+            battery technology evolution, OEM market share, and clean alternative fuel vehicle (CAFV) adoption.
+          </p>
+
+          <div class="hero-actions">
+            <a href="#dashboard" class="btn-primary">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                <line x1="3" y1="9" x2="21" y2="9"></line>
+                <line x1="9" y1="21" x2="9" y2="9"></line>
+              </svg>
+              <span>Explore Live Dashboard</span>
+            </a>
+
+            <a href="#story" class="btn-secondary">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
+                <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
+              </svg>
+              <span>View Analytics Story</span>
+            </a>
+
+            <a href="#about" class="btn-secondary">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="10"></circle>
+                <line x1="12" y1="16" x2="12" y2="12"></line>
+                <line x1="12" y1="8" x2="12.01" y2="8"></line>
+              </svg>
+              <span>Dataset & Methodology</span>
+            </a>
+          </div>
+        </div>
+
+        <!-- Analytical Highlights Grid -->
+        <div class="metrics-grid">
+          <div class="metric-card">
+            <div class="metric-icon-box">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M19 17h2c.6 0 1-.4 1-1v-3c0-.9-.7-1.7-1.5-1.9C18.7 10.6 16 10 16 10s-1.3-1.4-2.2-2.3c-.5-.4-1.1-.7-1.8-.7H5c-.6 0-1.1.4-1.4.9l-1.5 2.8C2.1 11 2 11.5 2 12v4c0 .6.4 1 1 1h2"></path>
+                <circle cx="7" cy="17" r="2"></circle>
+                <path d="M9 17h6"></path>
+                <circle cx="17" cy="17" r="2"></circle>
+              </svg>
+            </div>
+            <div>
+              <div class="metric-value">150K+</div>
+              <div class="metric-label">EV Registrations</div>
+              <div class="metric-sub">Observed in active population</div>
+            </div>
+          </div>
+
+          <div class="metric-card">
+            <div class="metric-icon-box">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M21.21 15.89A10 10 0 1 1 8 2.83"></path>
+                <path d="M22 12A10 10 0 0 0 12 2v10z"></path>
+              </svg>
+            </div>
+            <div>
+              <div class="metric-value">78% BEV</div>
+              <div class="metric-label">Battery Electric Share</div>
+              <div class="metric-sub">Outpacing Plug-in Hybrids</div>
+            </div>
+          </div>
+
+          <div class="metric-card">
+            <div class="metric-icon-box">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
+              </svg>
+            </div>
+            <div>
+              <div class="metric-value">238 mi</div>
+              <div class="metric-label">Average Range Peak</div>
+              <div class="metric-sub">High-efficiency BEV models</div>
+            </div>
+          </div>
+
+          <div class="metric-card">
+            <div class="metric-icon-box">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="8" r="7"></circle>
+                <polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"></polyline>
+              </svg>
+            </div>
+            <div>
+              <div class="metric-value">35+ OEMs</div>
+              <div class="metric-label">Manufacturers Tracked</div>
+              <div class="metric-sub">Global competitive landscape</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Project Objectives -->
+        <div class="objectives-section">
+          <div class="section-header">
+            <span class="section-tag">Academic Research Focus</span>
+            <h2 class="section-title">Key Project Objectives</h2>
+            <p class="section-description">
+              Formulated to extract actionable quantitative intelligence regarding clean mobility transitions and automotive market behavior.
+            </p>
+          </div>
+
+          <div class="objectives-grid">
+            {% for obj in config.objectives %}
+            <div class="objective-card">
+              <div class="obj-card-header">
+                <div class="obj-icon">
+                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    {% if obj.icon == "trending-up" %}
+                      <polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline>
+                      <polyline points="17 6 23 6 23 12"></polyline>
+                    {% elif obj.icon == "pie-chart" %}
+                      <path d="M21.21 15.89A10 10 0 1 1 8 2.83"></path>
+                      <path d="M22 12A10 10 0 0 0 12 2v10z"></path>
+                    {% elif obj.icon == "award" %}
+                      <circle cx="12" cy="8" r="7"></circle>
+                      <polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"></polyline>
+                    {% elif obj.icon == "zap" %}
+                      <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
+                    {% elif obj.icon == "shield-check" %}
+                      <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+                      <path d="m9 12 2 2 4-4"></path>
+                    {% else %}
+                      <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+                      <circle cx="12" cy="10" r="3"></circle>
+                    {% endif %}
+                  </svg>
+                </div>
+                <span class="obj-number">{{ obj.id }}</span>
+              </div>
+              <h3 class="obj-title">{{ obj.title }}</h3>
+              <p class="obj-desc">{{ obj.description }}</p>
+            </div>
+            {% endfor %}
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ======================================================================
+         Section 2: Interactive Tableau Dashboard
+         ====================================================================== -->
+    <section id="dashboard" class="embed-section">
+      <div class="container">
+        <div class="section-header">
+          <span class="section-tag">Interactive Business Intelligence</span>
+          <h2 class="section-title">Live Tableau Public Dashboard</h2>
+          <p class="section-description">
+            Explore interactive cross-filtering, vehicle category distributions, OEM performance benchmarks, and geographical densities.
+          </p>
+        </div>
+
+        <!-- Embed Container Card -->
+        <div class="embed-panel" id="dashboardPanel">
+          <!-- Toolbar Header -->
+          <div class="embed-toolbar">
+            <div class="embed-toolbar-left">
+              <span class="embed-title-text">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                  <line x1="3" y1="9" x2="21" y2="9"></line>
+                  <line x1="9" y1="21" x2="9" y2="9"></line>
+                </svg>
+                <span>EV Market Performance BI Dashboard</span>
+              </span>
+
+              {% if is_dashboard_configured %}
+              <span class="embed-status-badge">
+                <span class="embed-status-dot"></span>
+                <span>Live Public Viz</span>
+              </span>
+              {% else %}
+              <span class="embed-status-badge" style="background-color: var(--warning-amber-soft); color: var(--warning-amber);">
+                <span>Configuration Required</span>
+              </span>
+              {% endif %}
+            </div>
+
+            <div class="embed-toolbar-right">
+              <button type="button" class="toolbar-btn" onclick="reloadEmbed('dashboardIframe')" title="Reload Embed Frame">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M23 4v6h-6"></path>
+                  <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path>
+                </svg>
+                <span>Reload</span>
+              </button>
+
+              <button type="button" class="toolbar-btn" onclick="toggleFullscreen('dashboardPanel')" title="Expand View">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"></path>
+                </svg>
+                <span>Fullscreen</span>
+              </button>
+
+              <a href="{{ dashboard_url }}" target="_blank" rel="noopener noreferrer" class="toolbar-btn" title="Open directly on Tableau Public">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
+                  <polyline points="15 3 21 3 21 9"></polyline>
+                  <line x1="10" y1="14" x2="21" y2="3"></line>
+                </svg>
+                <span>Open in Tableau</span>
+              </a>
+            </div>
+          </div>
+
+          <!-- Embed Visual Body -->
+          {% if is_dashboard_configured %}
+          <div class="embed-frame-wrapper">
+            <iframe
+              id="dashboardIframe"
+              class="tableau-iframe"
+              src="{{ dashboard_embed_url }}"
+              title="EV Market Performance Dashboard"
+              allowfullscreen>
+            </iframe>
+          </div>
+          {% else %}
+          <!-- Graceful Fallback Card when Tableau URL is missing/placeholder -->
+          <div class="embed-fallback-card">
+            <div class="fallback-icon-box">
+              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
+                <line x1="12" y1="9" x2="12" y2="13"></line>
+                <line x1="12" y1="17" x2="12.01" y2="17"></line>
+              </svg>
+            </div>
+            <h3 class="fallback-title">Tableau Dashboard URL Not Configured</h3>
+            <p class="fallback-desc">
+              Your website is running smoothly, but the Tableau Dashboard URL needs to be specified in <code>app.py</code>.
+            </p>
+            <div class="fallback-code-box">
+              <span class="code-comment"># Open app.py and update this variable:</span><br>
+              <span class="code-highlight">TABLEAU_DASHBOARD_URL</span> = "<span style="color: #a7f3d0;">https://public.tableau.com/views/YourWorkbook/YourDashboard</span>"
+            </div>
+            <a href="https://public.tableau.com" target="_blank" rel="noopener noreferrer" class="btn-primary">
+              Visit Tableau Public
+            </a>
+          </div>
+          {% endif %}
+        </div>
+
+        <!-- Dashboard Interactivity Guidelines -->
+        <div class="embed-tips-box">
+          <div class="tips-icon-box">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="10"></circle>
+              <line x1="12" y1="16" x2="12" y2="12"></line>
+              <line x1="12" y1="8" x2="12.01" y2="8"></line>
+            </svg>
+          </div>
+          <div>
+            <h4 class="tips-title">How to Interact with this Visual BI Dashboard:</h4>
+            <p class="tips-text">
+              Hover over data points to inspect detailed vehicle attributes (MSRP, electric range, model year).
+              Click on any chart segment (e.g. manufacturer or vehicle type) to dynamically cross-filter the other views.
+              If third-party cookies or browser privacy shields prevent the frame from rendering, click <strong>"Open in Tableau"</strong> on the toolbar.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ======================================================================
+         Section 3: Narrative Analytics Story
+         ====================================================================== -->
+    <section id="story" class="embed-section alt-bg">
+      <div class="container">
+        <div class="section-header">
+          <span class="section-tag">Analytical Progression</span>
+          <h2 class="section-title">EV Market Narrative & Story</h2>
+          <p class="section-description">
+            A guided visual walkthrough chronicling the chronological transition from early electric niche vehicles to mainstream adoption.
+          </p>
+        </div>
+
+        <!-- Story Progression Stages -->
+        <div class="story-timeline">
+          <div class="story-stage-card">
+            <span class="stage-number-pill">Stage 01</span>
+            <h3 class="stage-title">The Inception Phase</h3>
+            <p class="stage-desc">
+              Early market introduction (1997 - 2011) driven by early technology adopters and hybrid pioneers, limited by sub-100-mile battery capabilities.
+            </p>
+          </div>
+
+          <div class="story-stage-card">
+            <span class="stage-number-pill">Stage 02</span>
+            <h3 class="stage-title">Policy & CAFV Catalysts</h3>
+            <p class="stage-desc">
+              Implementation of Clean Alternative Fuel Vehicle (CAFV) tax rebates and state-level purchase incentives accelerating consumer awareness.
+            </p>
+          </div>
+
+          <div class="story-stage-card">
+            <span class="stage-number-pill">Stage 03</span>
+            <h3 class="stage-title">Mass BEV Proliferation</h3>
+            <p class="stage-desc">
+              Exponential scaling led by Tesla Model 3 / Y, Nissan Leaf, and Chevrolet Bolt, achieving 200+ mile ranges and fast-charging network parity.
+            </p>
+          </div>
+
+          <div class="story-stage-card">
+            <span class="stage-number-pill">Stage 04</span>
+            <h3 class="stage-title">Competitive Horizon</h3>
+            <p class="stage-desc">
+              Legacy automakers (Ford, BMW, Hyundai, VW) entering mainstream market segments, diversifying form factors from sedans to electric SUVs and trucks.
+            </p>
+          </div>
+        </div>
+
+        <!-- Story Embed Panel -->
+        <div class="embed-panel" id="storyPanel">
+          <div class="embed-toolbar">
+            <div class="embed-toolbar-left">
+              <span class="embed-title-text">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
+                  <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
+                </svg>
+                <span>Interactive Tableau Story Arc</span>
+              </span>
+
+              {% if is_story_configured %}
+              <span class="embed-status-badge">
+                <span class="embed-status-dot"></span>
+                <span>Story Visuals Connected</span>
+              </span>
+              {% else %}
+              <span class="embed-status-badge" style="background-color: var(--warning-amber-soft); color: var(--warning-amber);">
+                <span>Configuration Required</span>
+              </span>
+              {% endif %}
+            </div>
+
+            <div class="embed-toolbar-right">
+              <button type="button" class="toolbar-btn" onclick="reloadEmbed('storyIframe')" title="Reload Story Frame">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M23 4v6h-6"></path>
+                  <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path>
+                </svg>
+                <span>Reload</span>
+              </button>
+
+              <button type="button" class="toolbar-btn" onclick="toggleFullscreen('storyPanel')" title="Expand View">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"></path>
+                </svg>
+                <span>Fullscreen</span>
+              </button>
+
+              <a href="{{ story_url }}" target="_blank" rel="noopener noreferrer" class="toolbar-btn" title="Open Story directly on Tableau Public">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
+                  <polyline points="15 3 21 3 21 9"></polyline>
+                  <line x1="10" y1="14" x2="21" y2="3"></line>
+                </svg>
+                <span>Open in Tableau</span>
+              </a>
+            </div>
+          </div>
+
+          <!-- Story Visual Body -->
+          {% if is_story_configured %}
+          <div class="embed-frame-wrapper">
+            <iframe
+              id="storyIframe"
+              class="tableau-iframe"
+              src="{{ story_embed_url }}"
+              title="EV Market Story Walkthrough"
+              allowfullscreen>
+            </iframe>
+          </div>
+          {% else %}
+          <div class="embed-fallback-card">
+            <div class="fallback-icon-box">
+              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="10"></circle>
+                <line x1="12" y1="8" x2="12" y2="12"></line>
+                <line x1="12" y1="16" x2="12.01" y2="16"></line>
+              </svg>
+            </div>
+            <h3 class="fallback-title">Tableau Story URL Not Configured</h3>
+            <p class="fallback-desc">
+              To embed your dedicated Tableau Public Story, open <code>app.py</code> and set <code>TABLEAU_STORY_URL</code>.
+            </p>
+            <div class="fallback-code-box">
+              <span class="code-comment"># In app.py:</span><br>
+              <span class="code-highlight">TABLEAU_STORY_URL</span> = "<span style="color: #a7f3d0;">https://public.tableau.com/views/YourWorkbook/YourStory</span>"
+            </div>
+            <a href="https://public.tableau.com" target="_blank" rel="noopener noreferrer" class="btn-primary">
+              Visit Tableau Public
+            </a>
+          </div>
+          {% endif %}
+        </div>
+      </div>
+    </section>
+
+    <!-- ======================================================================
+         Section 4: About, Dataset & Technologies
+         ====================================================================== -->
+    <section id="about" class="about-section">
+      <div class="container">
+        <div class="section-header">
+          <span class="section-tag">Project Documentation & Transparency</span>
+          <h2 class="section-title">About the Project & Dataset</h2>
+          <p class="section-description">
+            Complete technical specifications, dataset attributes, integrity notes, and development stack.
+          </p>
+        </div>
+
+        <div class="about-grid">
+          <!-- Left Column: Project Scope & Dataset Details -->
+          <div>
+            <div class="about-card">
+              <h3 class="about-card-title">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                  <polyline points="14 2 14 8 20 8"></polyline>
+                  <line x1="16" y1="13" x2="8" y2="13"></line>
+                  <line x1="16" y1="17" x2="8" y2="17"></line>
+                  <polyline points="10 9 9 9 8 9"></polyline>
+                </svg>
+                <span>Academic Project Scope & Dataset</span>
+              </h3>
+
+              <p class="about-text">
+                This project investigates the evolution and performance indicators of the modern Electric Vehicle (EV) market.
+                Using empirical population data, the study explores transition dynamics from internal combustion engines (ICE)
+                to Battery Electric (BEV) and Plug-in Hybrid Electric Vehicles (PHEV).
+              </p>
+
+              <!-- Dataset Feature Attributes Table -->
+              <h4 style="font-size: 1.05rem; font-weight: 700; color: var(--text-headline); margin-top: 24px;">
+                Key Dataset Feature Schema:
+              </h4>
+
+              <div class="dataset-table-wrapper">
+                <table class="dataset-table">
+                  <thead>
+                    <tr>
+                      <th style="width: 28%;">Attribute Field</th>
+                      <th>Description & Analytical Role</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {% for attr in config.dataset.key_attributes %}
+                    <tr>
+                      <td><span class="attr-code">{{ attr.field }}</span></td>
+                      <td>{{ attr.description }}</td>
+                    </tr>
+                    {% endfor %}
+                  </tbody>
+                </table>
+              </div>
+
+              <!-- Integrity Callout Box -->
+              <div class="integrity-banner">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                  <polyline points="22 4 12 14.01 9 11.01"></polyline>
+                </svg>
+                <div>
+                  <strong>Academic Data Transparency:</strong> {{ config.dataset.data_integrity_notes }}
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Right Column: Student / College Project Information Card -->
+          <div>
+            <div class="student-meta-card">
+              <div class="meta-header-box">
+                <div class="student-avatar-box">
+                  <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                    <circle cx="12" cy="7" r="4"></circle>
+                  </svg>
+                </div>
+                <h3 class="student-card-title">Project Credentials</h3>
+                <p class="student-card-sub">Academic Capstone Submission</p>
+              </div>
+
+              <ul class="meta-details-list">
+                <li class="meta-item">
+                  <span class="meta-label">Project Title</span>
+                  <span class="meta-value">{{ config.project_title }}</span>
+                </li>
+
+                <li class="meta-item">
+                  <span class="meta-label">Domain</span>
+                  <span class="meta-value">Data Analytics & Business Intelligence</span>
+                </li>
+
+                <li class="meta-item">
+                  <span class="meta-label">Academic Year</span>
+                  <span class="meta-value">{{ config.academic_year }}</span>
+                </li>
+
+                <li class="meta-item">
+                  <span class="meta-label">Department / Branch</span>
+                  <span class="meta-value">{{ config.institution_placeholder }}</span>
+                </li>
+
+                <li class="meta-item">
+                  <span class="meta-label">Visualization Platform</span>
+                  <span class="meta-value">Tableau Public (Cloud Hosted)</span>
+                </li>
+
+                <li class="meta-item">
+                  <span class="meta-label">Web Framework</span>
+                  <span class="meta-value">Python Flask (WSGI Architecture)</span>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <!-- Technology Stack Grid -->
+        <div class="tech-stack-wrapper">
+          <div class="section-header" style="margin-bottom: 24px;">
+            <h3 class="section-title" style="font-size: 1.6rem;">Technology Stack</h3>
+            <p class="section-description">
+              Lightweight, modular software components utilized for data handling, presentation, and interactive visual embedding.
+            </p>
+          </div>
+
+          <div class="tech-grid">
+            {% for tech in config.technologies %}
+            <div class="tech-card">
+              <div class="tech-icon-box">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  {% if tech.icon == "server" %}
+                    <rect x="2" y="2" width="20" height="8" rx="2" ry="2"></rect>
+                    <rect x="2" y="14" width="20" height="8" rx="2" ry="2"></rect>
+                    <line x1="6" y1="6" x2="6.01" y2="6"></line>
+                    <line x1="6" y1="18" x2="6.01" y2="18"></line>
+                  {% elif tech.icon == "bar-chart-2" %}
+                    <line x1="18" y1="20" x2="18" y2="10"></line>
+                    <line x1="12" y1="20" x2="12" y2="4"></line>
+                    <line x1="6" y1="20" x2="6" y2="14"></line>
+                  {% elif tech.icon == "layout" %}
+                    <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                    <line x1="3" y1="9" x2="21" y2="9"></line>
+                    <line x1="9" y1="21" x2="9" y2="9"></line>
+                  {% else %}
+                    <polyline points="16 18 22 12 16 6"></polyline>
+                    <polyline points="8 6 2 12 8 18"></polyline>
+                  {% endif %}
+                </svg>
+              </div>
+              <div class="tech-category">{{ tech.category }}</div>
+              <div class="tech-name">{{ tech.name }}</div>
+              <div class="tech-desc">{{ tech.description }}</div>
+            </div>
+            {% endfor %}
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- ========================================================================
+       Footer
+       ======================================================================== -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-top">
+        <div class="footer-brand">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
+          </svg>
+          <span>Electric Vehicle Market Performance & Insights</span>
+        </div>
+
+        <nav class="footer-nav">
+          <a href="#overview">Overview</a>
+          <a href="#dashboard">Dashboard</a>
+          <a href="#story">Story</a>
+          <a href="#about">About</a>
+          <a href="{{ dashboard_url }}" target="_blank" rel="noopener noreferrer">Tableau Public</a>
+        </nav>
+      </div>
+
+      <div class="footer-bottom">
+        <div>
+          &copy; {{ config.academic_year }} College Capstone Project. Developed with Python Flask & Tableau Public.
+        </div>
+        <div>
+          Academic & Educational Demonstration Purposes.
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Floating Back to Top Button -->
+  <button id="backToTopBtn" class="back-to-top-btn" aria-label="Back to Top" title="Back to Top">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+      <polyline points="18 15 12 9 6 15"></polyline>
+    </svg>
+  </button>
+
+  <!-- ========================================================================
+       Minimal Vanilla JavaScript
+       ======================================================================== -->
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      // 1. Mobile Menu Toggle
+      const hamburgerBtn = document.getElementById("hamburgerBtn");
+      const navMenu = document.getElementById("navMenu");
+
+      if (hamburgerBtn && navMenu) {
+        hamburgerBtn.addEventListener("click", function () {
+          navMenu.classList.toggle("open");
+        });
+
+        // Close mobile menu on link click
+        navMenu.querySelectorAll(".nav-link").forEach(function (link) {
+          link.addEventListener("click", function () {
+            navMenu.classList.remove("open");
+          });
+        });
+      }
+
+      // 2. Active Navigation Highlight on Scroll (ScrollSpy)
+      const sections = document.querySelectorAll("section[id]");
+      const navLinks = document.querySelectorAll(".nav-link");
+
+      function updateActiveNav() {
+        const scrollY = window.pageYOffset || document.documentElement.scrollTop;
+        const navbarHeight = 80;
+
+        sections.forEach(function (current) {
+          const sectionHeight = current.offsetHeight;
+          const sectionTop = current.offsetTop - navbarHeight - 50;
+          const sectionId = current.getAttribute("id");
+
+          if (scrollY > sectionTop && scrollY <= sectionTop + sectionHeight) {
+            navLinks.forEach(function (link) {
+              link.classList.remove("active");
+              if (link.getAttribute("href") === "#" + sectionId) {
+                link.classList.add("active");
+              }
+            });
+          }
+        });
+
+        // Sticky Navbar shadow trigger
+        const navbar = document.getElementById("navbar");
+        if (navbar) {
+          if (scrollY > 20) {
+            navbar.classList.add("scrolled");
+          } else {
+            navbar.classList.remove("scrolled");
+          }
+        }
+
+        // Back to top button visibility
+        const backToTopBtn = document.getElementById("backToTopBtn");
+        if (backToTopBtn) {
+          if (scrollY > 400) {
+            backToTopBtn.classList.add("visible");
+          } else {
+            backToTopBtn.classList.remove("visible");
+          }
+        }
+      }
+
+      window.addEventListener("scroll", updateActiveNav);
+      updateActiveNav();
+
+      // 3. Back to Top Click Action
+      const backToTopBtn = document.getElementById("backToTopBtn");
+      if (backToTopBtn) {
+        backToTopBtn.addEventListener("click", function () {
+          window.scrollTo({
+            top: 0,
+            behavior: "smooth"
+          });
+        });
+      }
+    });
+
+    // 4. Reload Iframe Handler
+    function reloadEmbed(iframeId) {
+      const iframe = document.getElementById(iframeId);
+      if (iframe) {
+        const currentSrc = iframe.src;
+        iframe.src = "";
+        setTimeout(function () {
+          iframe.src = currentSrc;
+        }, 150);
+      }
+    }
+
+    // 5. Fullscreen Toggle Handler
+    function toggleFullscreen(panelId) {
+      const panel = document.getElementById(panelId);
+      if (!panel) return;
+
+      panel.classList.toggle("is-fullscreen");
+      if (panel.classList.contains("is-fullscreen")) {
+        document.body.style.overflow = "hidden";
+      } else {
+        document.body.style.overflow = "";
+      }
+    }
+
+    // Close fullscreen on ESC key
+    document.addEventListener("keydown", function (e) {
+      if (e.key === "Escape") {
+        document.querySelectorAll(".embed-panel.is-fullscreen").forEach(function (panel) {
+          panel.classList.remove("is-fullscreen");
+        });
+        document.body.style.overflow = "";
+      }
+    });
+  </script>
+</body>
+</html>
+
